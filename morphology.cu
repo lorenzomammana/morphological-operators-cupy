@@ -36,6 +36,7 @@ extern "C"
         {
             for (int i = 0; i < p; i++)
             {
+                // Skip first p-1 / 2 because of padding
                 int original_index = bx * p * n_window + ty * p + i + ((p - 1)/2);
 
                 if (original_index < image_shape)
