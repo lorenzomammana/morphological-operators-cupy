@@ -9,7 +9,7 @@ with open('tophat.cu', 'r') as f:
     code = f.read()
 
 module = cp.RawModule(code=code)
-dilation_horizontal = module.get_function('dilation_horizontal')
+dilation_cuda = module.get_function('dilation')
 
 
 def square_closing(img, db, bb):
@@ -46,14 +46,14 @@ def grey_dilation_cuda(image, p):
     [img, window_size, reconstruction_shape, pad_size, n_window,
      out, required_blocks, thread_per_block] = prepare_morph(image, p)
 
-    dilation_horizontal((required_blocks, ), (2, thread_per_block),
+    dilation_cuda((required_blocks, ), (2, thread_per_block),
                         (img, out, p, window_size, n_window, img.shape[0]), shared_mem=2 * n_window * p * 4)
 
     out = out.reshape(reconstruction_shape)[:, pad_size:-pad_size].transpose()
     [out, window_size, reconstruction_shape, pad_size, n_window,
      out2, required_blocks, thread_per_block] = prepare_morph(out, p)
 
-    dilation_horizontal((required_blocks, ), (2, thread_per_block),
+    dilation_cuda((required_blocks, ), (2, thread_per_block),
                         (out, out2, p, window_size, n_window, out.shape[0]), shared_mem=2 * n_window * p * 4)
     out2 = out2.reshape(reconstruction_shape)[:, pad_size:-pad_size].transpose()
 
@@ -84,8 +84,8 @@ def prepare_morph(img, p):
     else:
         thread_per_block = n_window
 
-    if 2 * n_window * p * 4 > dilation_horizontal.max_dynamic_shared_size_bytes:
-        max_window = int(np.floor(dilation_horizontal.max_dynamic_shared_size_bytes / (2 * p * 4)))
+    if 2 * n_window * p * 4 > dilation_cuda.max_dynamic_shared_size_bytes:
+        max_window = int(np.floor(dilation_cuda.max_dynamic_shared_size_bytes / (2 * p * 4)))
         required_blocks = int((original_num_window / max_window) + 1)
         n_window = max_window
         thread_per_block = max_window
@@ -97,7 +97,7 @@ if __name__ == '__main__':
     image = io.imread('01.jpg')
     image = cp.array(image[:, :, 0]).astype(int)
 
-    p = 110
+    p = 111
 
     start = timer()
     out = grey_dilation_cuda(image, p)

@@ -2,7 +2,7 @@
 
 extern "C"
 {
-    __global__ void dilation_horizontal(int * src, int * dst, int p, int window_size, int n_window, int image_shape)
+    __global__ void dilation(int * src, int * dst, int p, int window_size, int n_window, int image_shape)
     {
         extern __shared__ int smem[];
         int tx = threadIdx.x;
@@ -34,13 +34,13 @@ extern "C"
 
         if (tx == 0)
         {
-            for (int i = 1; i <= p; i++)
+            for (int i = 0; i < p; i++)
             {
-                int original_index = bx * p * n_window + ty * p + i;
+                int original_index = bx * p * n_window + ty * p + i + ((p - 1)/2);
 
                 if (original_index < image_shape)
                 {
-                    dst[original_index] = max(smem[ty * p + i - 1], smem[n_window * p + (ty * p) + i - 1]);
+                    dst[original_index] = max(smem[ty * p + i], smem[n_window * p + (ty * p) + i]);
                 }
             }
         }
