@@ -9,7 +9,7 @@ if __name__ == '__main__':
     image = io.imread('01.jpg')
     image = cp.array(image[:, :, 0]).astype(int)
 
-    p = 3
+    p = 121
 
     start = timer()
     out = grey_closing_cuda(image, p)
@@ -31,7 +31,7 @@ if __name__ == '__main__':
     print(end - start)
 
     start = timer()
-    NWTH_cpu = white_tophat(cp.asnumpy(image), structure=np.zeros([3, 3]))
-    NBTH_cpu = black_tophat(cp.asnumpy(image), structure=np.zeros([3, 3]))
+    NWTH_cpu = white_tophat(cp.asnumpy(image), structure=np.zeros([p, p]))
+    NBTH_cpu = black_tophat(cp.asnumpy(image), structure=np.zeros([p, p]))
     end = timer()
     print(end - start)
