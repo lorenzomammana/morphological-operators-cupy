@@ -1,11 +1,8 @@
-from scipy.ndimage import grey_opening, grey_closing, grey_dilation, grey_erosion
+from scipy.ndimage import grey_opening, grey_closing, grey_dilation, grey_erosion, black_tophat, white_tophat
 from skimage import io
 import matplotlib.pyplot as plt
-import numpy as np
-import cupy as cp
 from timeit import default_timer as timer
-from morphology_cupy import grey_dilation_cuda, grey_erosion_cuda, grey_opening_cuda, grey_closing_cuda
-
+from morphology_cupy import *
 
 def square_closing(img, db, bb):
     return grey_closing(grey_opening(img, structure=db), structure=bb)
@@ -41,7 +38,7 @@ if __name__ == '__main__':
     image = io.imread('01.jpg')
     image = cp.array(image[:, :, 0]).astype(int)
 
-    p = 23
+    p = 3
 
     start = timer()
     out = grey_closing_cuda(image, p)
@@ -57,6 +54,16 @@ if __name__ == '__main__':
     plt.imshow(out_cpu, cmap='gray', vmin=0, vmax=255)
     plt.show()
 
+    start = timer()
+    [NWTH, NBTH] = grey_top_hat_cuda(image, p)
+    end = timer()
+    print(end - start)
+
+    start = timer()
+    NWTH_cpu = white_tophat(cp.asnumpy(image), structure=np.zeros([3, 3]))
+    NBTH_cpu = black_tophat(cp.asnumpy(image), structure=np.zeros([3, 3]))
+    end = timer()
+    print(end - start)
     # ax = plt.hist(image.ravel(), bins=256)
     # plt.show()
     #

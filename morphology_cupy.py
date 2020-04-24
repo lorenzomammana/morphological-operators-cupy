@@ -80,3 +80,11 @@ def grey_opening_cuda(image, p):
 
 def grey_closing_cuda(image, p):
     return grey_erosion_cuda(grey_dilation_cuda(image, p), p)
+
+
+def grey_top_hat_cuda(image, p):
+    NWTH = image - cp.minimum(grey_opening_cuda(image, p), image)
+    NBTH = cp.maximum(image, grey_closing_cuda(image, p)) - image
+
+    return [NWTH, NBTH]
+
