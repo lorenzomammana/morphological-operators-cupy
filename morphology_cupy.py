@@ -43,7 +43,7 @@ def prepare_morph(img, p, operation):
     img = img.reshape(-1)
     n_window = int(np.floor(img.shape[0] / p))
     out = cp.zeros_like(img)
-    required_padding = (p - np.mod(img.shape[0], 2 * p - 1))
+    required_padding = (2 * p - 1) - cp.size(img[(p * n_window - 1):-1])
 
     if required_padding > 0:
         img = cp.pad(img, (0, required_padding), constant_values=pad_value)
