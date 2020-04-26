@@ -1,7 +1,7 @@
 import cupy as cp
 import numpy as np
 
-with open('morphology.cu', 'r') as f:
+with open('morph_cupy/morphology.cu', 'r') as f:
     code = f.read()
 
 module = cp.RawModule(code=code)
