@@ -9,7 +9,7 @@ if __name__ == '__main__':
     image = io.imread('01.jpg')
     image = cp.array(image[:, :, 0]).astype(int)
 
-    p = 24
+    p = 55
 
     start = timer()
     out = grey_erosion_cuda(image, p)

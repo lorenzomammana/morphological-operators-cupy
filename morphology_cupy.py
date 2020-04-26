@@ -43,6 +43,10 @@ def prepare_morph(img, p, operation):
     img = img.reshape(-1)
     n_window = int(np.floor(img.shape[0] / p))
     out = cp.zeros_like(img)
+
+    if p % 2 == 0 and operation == 'erosion':
+        img = cp.pad(img, (int(p / 2) - pad_size, 0), constant_values=pad_value)
+
     required_padding = (2 * p - 1) - cp.size(img[(p * n_window - 1):-1])
 
     if required_padding > 0:
