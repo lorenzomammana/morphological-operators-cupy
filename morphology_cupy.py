@@ -1,8 +1,12 @@
 import cupy as cp
 import numpy as np
 
-with open('morph_cupy/morphology.cu', 'r') as f:
-    code = f.read()
+try:
+    with open('morphology.cu', 'r') as f:
+        code = f.read()
+except FileNotFoundError:
+    with open('morph_cupy/morphology.cu', 'r') as f:
+        code = f.read()
 
 module = cp.RawModule(code=code)
 dilation_cuda = module.get_function('dilation')
