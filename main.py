@@ -6,10 +6,10 @@ from morphology_cupy import *
 
 
 if __name__ == '__main__':
-    image = io.imread('01.jpg')
-    image = cp.array(image[:, :, 0]).astype(int)
+    image = io.imread('Lena.png')
+    image = cp.array(image).astype(int)
 
-    p = 55
+    p = 12
 
     start = timer()
     out = grey_erosion_cuda(image, p)
@@ -22,10 +22,10 @@ if __name__ == '__main__':
     print("Erosion CPU: " + str(end - start))
 
     print("Difference: " + str(cp.sum(cp.asnumpy(out) != out_cpu)))
-    # plt.imshow(cp.asnumpy(out), cmap='gray', vmin=0, vmax=255)
-    # plt.show()
-    # plt.imshow(out_cpu, cmap='gray', vmin=0, vmax=255)
-    # plt.show()
+    plt.imshow(cp.asnumpy(out), cmap='gray', vmin=0, vmax=255)
+    plt.show()
+    plt.imshow(out_cpu, cmap='gray', vmin=0, vmax=255)
+    plt.show()
 
     start = timer()
     out = grey_dilation_cuda(image, p)
